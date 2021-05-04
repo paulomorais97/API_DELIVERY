@@ -1,5 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
+import static com.algaworks.algafood.infrastructure.repository.spec.RestauranteSpecs.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -70,5 +72,13 @@ public class TestController {
 	@GetMapping("/restaurantes/count-por-nome")
 	public int countByCozinhaId(Long cozinhaId){
 		return restauranteRepository.countByCozinhaId(cozinhaId);
+	}
+	
+	@GetMapping("/restaurantes/com-frete-gratis")
+	public List<Restaurante> restaurantesFreeDelivery(String nome){
+		
+		
+		return restauranteRepository.findAll(comFreteGratis()
+				.and(comNomeSemelhante(nome)));
 	}
 }

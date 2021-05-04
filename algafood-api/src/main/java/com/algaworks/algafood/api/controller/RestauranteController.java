@@ -88,7 +88,7 @@ public class RestauranteController {
 		}
 		
 	}
-	@PatchMapping("/{id}")
+	@PatchMapping("/{id}/partial")
 	public ResponseEntity<?> atualizarParcial(@PathVariable Long id,
 			@RequestBody Map<String, Object> campos){
 		Optional<Restaurante> restauranteAtual = restauranteRepository.findById(id);
