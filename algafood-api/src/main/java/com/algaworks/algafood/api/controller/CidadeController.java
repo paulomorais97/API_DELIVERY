@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.domain.exception.EntidadeEmUsoException;
@@ -38,56 +39,35 @@ public class CidadeController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Cidade> findById(@PathVariable Long id){
-		Optional<Cidade> cidade = cidadeRepository.findById(id);
-		
-		if(cidade.isPresent()) {
-			return ResponseEntity.ok(cidade.get());
-		}
-		
-		return ResponseEntity.notFound().build();
+	public Cidade findById(@PathVariable Long id){
+		return cadastroCidade.findById(id);
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> salvar(@RequestBody Cidade cidade){
-		try {
-			cidade = cadastroCidade.salvar(cidade);
-			return ResponseEntity.status(HttpStatus.CREATED).body(cidade);
+	public Cidade salvar(@RequestBody Cidade cidade){
+	
+		return cidade = cadastroCidade.salvar(cidade);
 			
-		} catch(EntidadeNaoEncontradaException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> atualizar(@RequestBody Cidade cidade, @PathVariable Long id){
-		try {
-			Optional<Cidade> cidadeAtual = cidadeRepository.findById(id);
-			
-			if(cidadeAtual.isPresent()) {
-				BeanUtils.copyProperties(cidade, cidadeAtual.get(), "id");
+	public Cidade atualizar(@RequestBody Cidade cidade,
+									   @PathVariable Long id){
+		
+			Cidade cidadeAtual = cadastroCidade.findById(id);
+					
+			BeanUtils.copyProperties(cidade, cidadeAtual, "id");			
 				
-				Cidade cidadeSalva = cadastroCidade.salvar(cidadeAtual.get());
-				return ResponseEntity.ok(cidadeSalva);
-			}
-			return ResponseEntity.notFound().build();
-			
-		} catch(EntidadeNaoEncontradaException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+			return cadastroCidade.salvar(cidadeAtual);
+					
 	}
 	
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Cidade> remover(@PathVariable Long id){
-		try {
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void remover(@PathVariable Long id){
 			cadastroCidade.excluir(id);
-			return ResponseEntity.noContent().build();
-		}catch(EntidadeNaoEncontradaException e) {
-			return ResponseEntity.notFound().build();
-		}catch(EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
-		}
+		
 	}
 	
 	
